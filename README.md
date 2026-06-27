@@ -1,17 +1,6 @@
 # sentinel
 
 ![Rust](https://img.shields.io/badge/Rust-%23000000.svg?style=flat&logo=rust&logoColor=white)
-<<<<<<< HEAD
-![Linux](https://img.shields.io/badge/platform-linux-lightgrey?style=flat-square&logo=linux)
-![macOS](https://img.shields.io/badge/platform-macos-lightgrey?style=flat-square&logo=apple)
-![Lines of Code](https://sloc.xyz/github/SpeedyCoder1192/sentinel)
-
-![systemd](https://img.shields.io/badge/init-systemd-blue?style=flat-square)
-![OpenRC](https://img.shields.io/badge/init-OpenRC-blue?style=flat-square)
-![runit](https://img.shields.io/badge/init-runit-blue?style=flat-square)
-![SysVinit](https://img.shields.io/badge/init-SysVinit-blue?style=flat-square)
-![launchd](https://img.shields.io/badge/init-launchd-blue?style=flat-square)
-=======
 ![Linux](https://img.shields.io/badge/platform-linux-lightgrey?logo=linux)
 ![macOS](https://img.shields.io/badge/platform-macos-lightgrey?logo=apple)
 ![Lines of Code](https://sloc.xyz/github/SpeedyCoder1192/sentinel?style=flat)
@@ -21,7 +10,6 @@
 ![runit](https://img.shields.io/badge/init-runit-blue)
 ![SysVinit](https://img.shields.io/badge/init-SysVinit-blue)
 ![launchd](https://img.shields.io/badge/init-launchd-blue)
->>>>>>> ff1a9ac (rounded badges)
 
 ---
 
