@@ -1,8 +1,11 @@
-name: Multi-Platform Build Pipeline
+name: Multi-Platform Building
 
 on:
   push:
     branches: [main]
+
+permissions:
+  contents: write
 
 jobs:
   build-linux:
@@ -59,3 +62,65 @@ jobs:
         with:
           name: sentinel-mac-${{ matrix.target }}
           path: target/${{ matrix.target }}/release/sentinel
+
+  create-release:
+    name: Create GitHub Release
+    needs: [build-linux, build-mac]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      # Parses the version string directly out of your Cargo.toml [package] section
+      - name: Extract Version from Cargo.toml
+        id: get_version
+        run: |
+          VERSION=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n1)
+          echo "VERSION=v$VERSION" >> $GITHUB_ENV
+
+      - name: Create Workspace Directory
+        run: mkdir -p release-assets
+
+      - name: Download Linux Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: sentinel-linux-*
+          path: release-assets/linux
+
+      - name: Download macOS Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: sentinel-mac-*
+          path: release-assets/mac
+
+      - name: Package and Rename Binaries
+        run: |
+          cd release-assets
+          
+          # Package Linux binaries
+          mv linux/sentinel-linux-x86_64-unknown-linux-gnu/sentinel ./sentinel-linux-amd64
+          mv linux/sentinel-linux-aarch64-unknown-linux-gnu/sentinel ./sentinel-linux-arm64
+          tar -czf sentinel-linux-amd64.tar.gz sentinel-linux-amd64
+          tar -czf sentinel-linux-arm64.tar.gz sentinel-linux-arm64
+          
+          # Package macOS binaries
+          mv mac/sentinel-mac-x86_64-apple-darwin/sentinel ./sentinel-macos-intel
+          mv mac/sentinel-mac-aarch64-apple-darwin/sentinel ./sentinel-macos-apple-silicon
+          tar -czf sentinel-macos-intel.tar.gz sentinel-macos-intel
+          tar -czf sentinel-macos-apple-silicon.tar.gz sentinel-macos-apple-silicon
+
+      - name: Publish and Tag Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: "Sentinel ${{ env.VERSION }}"
+          body: "Automated binary compilation for version ${{ env.VERSION }}"
+          draft: false
+          prerelease: false
+          files: |
+            release-assets/sentinel-linux-amd64.tar.gz
+            release-assets/sentinel-linux-arm64.tar.gz
+            release-assets/sentinel-macos-intel.tar.gz
+            release-assets/sentinel-macos-apple-silicon.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
